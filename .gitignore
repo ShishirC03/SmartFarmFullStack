@@ -1,0 +1,13 @@
+﻿# Ignore environment, dataset, and output folders
+yoloenv/
+runs/
+dataset/
+data/
+__pycache__/
+*.zip
+*.csv
+*.npy
+*.pkl
+*.log
+*.json
+*.yaml
