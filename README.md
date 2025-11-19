@@ -32,196 +32,40 @@ It leverages mobile camera technology to detect various animals (e.g., **Monkey*
 git clone [https://github.com/your-username/SmartFarm.git](https://github.com/your-username/SmartFarm.git)
 cd SmartFarm
 🖥️ Step 2: Start the Backend Server
+Navigate to the backend folder:
 
-Navigate to backend folder:
+Bash
 
 cd backend
+Install dependencies:
+
+Bash
+
 npm install
+Create a .env file with PORT, MONGO_URI, and MODEL_SERVER_URL.
 
+Start the server:
 
-Create a .env file:
-
-PORT=5000
-MONGO_URI=your_mongodb_uri_here
-MODEL_SERVER_URL=http://localhost:8000
-
-
-Start backend:
+Bash
 
 npm start
+📱 Step 3: Start Metro (React Native Bundler)
+Navigate to the app folder:
 
-
-If successful, you should see:
-
-Server running on port 5000
-MongoDB connected
-
-📱 Step 3: Start Metro (React Native)
-
-Open a new terminal:
+Bash
 
 cd SmartFarmApp
+Install dependencies:
+
+Bash
+
 npm install
+Start the bundler:
+
+Bash
+
 npm start
+🤖 Step 4: Run the App
+Android: npm run android (Remember to use http://10.0.2.2:5000 for the backend URL on the emulator).
 
-
-This will run the Metro bundler.
-
-🤖 Step 4: Build & Run the App
-Android (Recommended)
-npm run android
-
-
-Important: On Android Emulator, React Native must use:
-http://10.0.2.2:5000 to talk to backend.
-
-iOS (macOS only)
-npm run ios
-
-📡 How the System Works
-
-Mobile app captures camera frames.
-
-Frames are sent to backend /api/frame.
-
-Backend forwards the image to YOLO model server.
-
-If an animal is detected:
-
-Stores processed image (/stored_images)
-
-Creates a Detection document in MongoDB
-
-Emits animalDetected via Socket.IO
-
-App instantly receives the alert & updates UI.
-
-🧠 Key Backend API Endpoints
-Endpoint	Method	Description
-/api/frame	POST	Upload frames for detection
-/api/detections/today	GET	Count of today’s detections
-/api/detections/latest-file	GET	Latest saved detection
-/api/detections/history	GET	Paginated detection history
-/images/<file>	GET	Serves stored images
-📲 App Features
-Dashboard
-
-Shows latest detection
-
-Shows today's alert count
-
-Quick actions (Refresh / Live Feed)
-
-History
-
-Displays all past detections
-
-Tap image to open full screen view
-
-Styled cards grouping type & confidence
-
-Live Feed
-
-Real-time camera frames → backend
-
-Immediate alerts via Socket.IO
-
-🗄️ Folder Structure Overview
-backend/
- ├── models/
- ├── routes/
- ├── controllers/
- ├── stored_images/
- ├── server.js
-
-SmartFarmApp/
- ├── src/
- │   ├── screens/
- │   ├── components/
- │   ├── utils/
- │   ├── navigation/
- └── App.tsx
-
-📸 Image Storage
-
-All images are saved automatically at:
-
-backend/stored_images/
-
-
-And served publicly at:
-
-http://<server>/images/<filename>.jpg
-
-🔧 Testing Realtime Alerts
-
-Add this temporary backend route:
-
-app.get('/test-emit', (req, res) => {
-  const io = req.app.get('io');
-  io.emit('animalDetected', {
-    detection: {
-      _id: 'test',
-      timestamp: new Date(),
-      imagePath: '/images/sample.jpg',
-      detections: [{ label: 'Monkey', confidence: 0.92 }],
-      count: 1
-    }
-  });
-  res.json({ emitted: true });
-});
-
-
-Visit in browser:
-
-http://localhost:5000/test-emit
-
-
-Your app should instantly show an alert.
-
-🛠️ Troubleshooting
-Metro stuck or cached errors:
-npx react-native start --reset-cache
-
-Android cannot load backend URLs:
-
-Use IP:
-
-http://10.0.2.2:5000
-
-Image not showing?
-
-Make sure path stored in DB starts with /images/...
-
-Ensure stored_images folder exists
-
-Check app uses imageUrl() helper
-
-📅 Roadmap
-
-Push notifications
-
-Multi-camera support
-
-Offline mode
-
-Admin web dashboard
-
-More animal types & improved accuracy
-
-🤝 Contributing
-
-Fork repo
-
-Create branch:
-
-git checkout -b feature/my-feature
-
-
-Commit changes
-
-Create Pull Request
-
-📄 License
-
-MIT License © 2025 SmartFarm
+iOS: npm run ios
