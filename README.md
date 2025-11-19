@@ -1,97 +1,150 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+📘 SmartFarm – AI Animal Intrusion Detection System
 
-# Getting Started
+A React Native + Node.js based real-time farm security app
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+Getting Started
 
-## Step 1: Start Metro
+Note: Make sure you have completed the basic setup for React Native, Node.js, and MongoDB before running this project.
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+Step 1: Clone the Repository
+git clone https://github.com/your-username/SmartFarm.git
+cd SmartFarm
 
-To start the Metro dev server, run the following command from the root of your React Native project:
 
-```sh
-# Using npm
+Your project structure:
+
+SmartFarm/
+ ├── backend/         # Node.js + Express server
+ ├── SmartFarmApp/    # React Native mobile app
+
+Step 2: Start the Backend Server
+
+Navigate to backend:
+
+cd backend
+npm install
+
+
+Create a .env file:
+
+PORT=5000
+MONGO_URI=your_mongodb_connection
+
+
+Start server:
+
 npm start
 
-# OR using Yarn
-yarn start
-```
 
-## Step 2: Build and run your app
+If successful, you will see:
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
+Server running on port 5000
+MongoDB connected
 
-### Android
+Step 3: Start Metro (React Native)
 
-```sh
-# Using npm
+Open a new terminal window:
+
+cd SmartFarmApp
+npm install
+npm start
+
+
+This starts the Metro bundler.
+
+Step 4: Build & Run the App
+
+Open another terminal pane:
+
+Android
 npm run android
 
-# OR using Yarn
-yarn android
-```
 
-### iOS
+The app will launch inside your Android Emulator automatically.
 
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
-
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
-
-```sh
-bundle install
-```
-
-Then, and every time you update your native dependencies, run:
-
-```sh
-bundle exec pod install
-```
-
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
-
-```sh
-# Using npm
+iOS (only if Mac + Xcode)
 npm run ios
 
-# OR using Yarn
-yarn ios
-```
+Project Features
+✅ Real-time Animal Detection
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+The backend serves the most recent animal intrusion images and detection data.
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
+✅ Live Alerts
 
-## Step 3: Modify your app
+• Instant pop-up alerts
+• Animal type and timestamp
+• Detection count
+• Image preview
 
-Now that you have successfully run the app, let's make changes!
+✅ Detection History Screen
 
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
+• Scrollable list of past detections
+• Thumbnail preview
+• Timestamp + AI confidence
 
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
+✅ Stylish Modern UI
 
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
+• Custom detection cards
+• Gradient styling
+• Accent color per animal
+• Smooth animations
 
-## Congratulations! :tada:
+✅ Offline-Safe
 
-You've successfully run and modified your React Native App. :partying_face:
+• React Native + AsyncStorage
+• Cached user data
 
-### Now what?
+Backend API Routes
+Route	Method	Description
+/api/detections/today	GET	Get today's total alerts
+/api/detections/latest-file	GET	Get the most recent detection
+/api/detections/history	GET	Full detection history
+Folder Structure
+SmartFarm/
+ ├── backend/
+ │    ├── routes/
+ │    ├── controllers/
+ │    ├── models/
+ │    └── server.js
+ │
+ └── SmartFarmApp/
+      ├── src/
+      │   ├── screens/
+      │   ├── components/
+      │   ├── navigation/
+      │   ├── utils/
+      │   └── assets/
+      └── App.tsx
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
+Troubleshooting
+❗ Metro not starting?
+npx react-native start --reset-cache
 
-# Troubleshooting
+❗ Images not loading?
 
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
+• Make sure API_BASE = http://10.0.2.2:5000
+ for Android
+• Ensure /uploads folder in backend has public permission
 
-# Learn More
+❗ MongoDB connection failing?
 
-To learn more about React Native, take a look at the following resources:
+• Check .env
+• Ensure MongoDB service is running
 
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
+Roadmap (Upcoming Features)
+
+Real-time live camera streaming
+
+More animal categories
+
+Push notifications
+
+Analytics dashboard
+
+Multi-device support
+
+License
+
+This project is open-source under the MIT License.
 - [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
