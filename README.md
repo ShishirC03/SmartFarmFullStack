@@ -69,3 +69,4 @@ npm start
 Android: npm run android (Remember to use http://10.0.2.2:5000 for the backend URL on the emulator).
 
 iOS: npm run ios
+Check branches for model and backend
