@@ -155,23 +155,30 @@
 # # === Cleanup ===
 # cap.release()
 # cv2.destroyAllWindows()
-# print("🟢 Detection stopped. Camera released.")
+# print("🟢 Detection stopped. Camera released.")..cd
 
-
-
-
+import sys, os
+print("PYTHON EXECUTABLE:", sys.executable)
+print("CWD:", os.getcwd())
 import cv2
 from ultralytics import YOLO
-import winsound
 import os
 import time
+import threading
+from playsound import playsound
+
+
 
 # === Paths ===
 BASE_DIR = os.path.dirname(__file__)
 MODEL_PATH = os.path.join(BASE_DIR, "best.pt")
+
+# Try fallback model path
 if not os.path.exists(MODEL_PATH):
     MODEL_PATH = os.path.join(BASE_DIR, "runs", "detect", "train", "weights", "best.pt")
-ALERT_PATH = os.path.join(BASE_DIR, "alert.wav")
+
+# Use raw string for Windows MP3 path
+ALERT_PATH = r"D:\FinalYearProject\aiModel\animal-detection-iot\air-raid-siren-225303.mp3"
 
 # === Load YOLO model ===
 model = YOLO(MODEL_PATH)
@@ -183,7 +190,7 @@ ignored_classes = {"person", "no_mask", "nilgai"}
 # === Track state ===
 last_detected_classes = set()
 last_buzzer_time = 0
-BUZZER_COOLDOWN = 10  # seconds
+BUZZER_COOLDOWN = 4  # seconds
 
 # === Camera setup ===
 cap = cv2.VideoCapture(0)
@@ -193,6 +200,15 @@ if not cap.isOpened():
 
 print("✅ Live detection started. Press 'q' to quit.\n")
 
+# === Function to play sound in background ===
+def play_alert_sound():
+    """Play alert sound asynchronously without blocking."""
+    if os.path.exists(ALERT_PATH):
+        threading.Thread(target=playsound, args=(ALERT_PATH,), daemon=True).start()
+    else:
+        print("⚠️ Alert sound file not found!")
+
+# === Detection Loop ===
 while True:
     ret, frame = cap.read()
     if not ret:
@@ -209,7 +225,7 @@ while True:
             conf = float(box.conf[0])
             label = class_names.get(cls_id, "Unknown")
 
-            # Ignore unwanted classes
+            # Ignore unwanted classes for detection and buzzer
             if label in ignored_classes:
                 continue
 
@@ -217,7 +233,7 @@ while True:
             if label not in last_detected_classes:
                 new_detections.add(label)
 
-            # Draw bounding box
+            # Draw bounding box for allowed classes
             x1, y1, x2, y2 = map(int, box.xyxy[0])
             cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
             cv2.putText(frame, f"{label} ({conf:.2f})", (x1, y1 - 10),
@@ -226,14 +242,13 @@ while True:
     # === Handle new detections ===
     current_time = time.time()
     if new_detections:
-        print(f"🔔 New detections: {', '.join(new_detections)}")
-        if current_time - last_buzzer_time > BUZZER_COOLDOWN:
-            if os.path.exists(ALERT_PATH):
-                winsound.PlaySound(ALERT_PATH, winsound.SND_FILENAME | winsound.SND_ASYNC)
-            else:
-                # fallback beep if alert.wav missing
-                winsound.Beep(2000, 500)
-            last_buzzer_time = current_time
+        # Play buzzer only if non-ignored animals detected
+        valid_detections = [cls for cls in new_detections if cls not in ignored_classes]
+        if valid_detections:
+            print(f"🔔 New detections: {', '.join(valid_detections)}")
+            if current_time - last_buzzer_time > BUZZER_COOLDOWN:
+                play_alert_sound()
+                last_buzzer_time = current_time
 
     # Update tracking
     last_detected_classes = current_classes
@@ -249,64 +264,3 @@ while True:
 cap.release()
 cv2.destroyAllWindows()
 print("\n🟢 Detection stopped. Camera released.")
-
-print("✅ Live animal detection started... (Press 'q' to quit)")
-
-while True:
-    ret, frame = cap.read()
-    if not ret:
-        print("⚠️ Frame not captured, exiting...")
-        break
-
-    results = model(frame, stream=True, conf=0.7)
-    current_classes = set()
-    new_detections = set()
-
-    for r in results:
-        boxes = r.boxes
-        for box in boxes:
-            cls_id = int(box.cls[0])
-            conf = float(box.conf[0])
-            label = class_names.get(cls_id, "Unknown")
-
-            # Ignore unwanted classes
-            if label in ignored_classes:
-                continue
-
-            current_classes.add(label)
-
-            # Detect new animals not seen before
-            if label not in last_detected_classes:
-                new_detections.add(label)
-
-            # Draw bounding box
-            x1, y1, x2, y2 = map(int, box.xyxy[0])
-            cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
-            cv2.putText(frame, f"{label} ({conf:.2f})", (x1, y1 - 10),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
-
-    # === Buzzer Logic ===
-    current_time = time.time()
-    if new_detections and (current_time - last_buzzer_time > BUZZER_COOLDOWN):
-        print(f"🔔 New detections: {', '.join(new_detections)}")
-        if os.path.exists(ALERT_PATH):
-            winsound.PlaySound(ALERT_PATH, winsound.SND_FILENAME | winsound.SND_ASYNC)
-        else:
-            print("⚠️ alert.wav file not found!")
-        last_buzzer_time = current_time
-
-    # Update the last seen classes
-    last_detected_classes = current_classes
-
-    # Display the video frame
-    cv2.imshow("Animal Detection", frame)
-
-    # Quit when 'q' is pressed
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
-
-# === Cleanup ===
-cap.release()
-cv2.destroyAllWindows()
-print("🟢 Detection stopped. Camera released.")
-
